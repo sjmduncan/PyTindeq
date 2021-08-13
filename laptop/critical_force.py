@@ -164,7 +164,7 @@ class CFT:
             x = np.array(self.x)
             y = np.array(self.y)
             results = analyse_data(x, y, 7, 3)
-            tmeans, fmeans, e_fmeans, msg, critical_load, load_asymptote, predicted_force = results
+            tmeans, fmeans, e_fmeans, msg, _critical_load, load_asymptote, predicted_force = results
             self.results_div.text = msg
 
             fill_src = ColumnDataSource(dict(x=tmeans, upper=predicted_force,

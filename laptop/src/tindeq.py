@@ -67,7 +67,7 @@ class TindeqProgressor(object):
         Simply pass on payload to correct handler
         """
         data = bytes(data)
-        kind, size = self.info_struct.unpack(data[:2])
+        kind, _size = self.info_struct.unpack(data[:2])
         if kind == self.response_codes['weight_measure']:
             # decode data
             for weight, useconds in self.data_struct.iter_unpack(data[2:]):
@@ -116,7 +116,7 @@ class TindeqProgressor(object):
 
         self.client = BleakClient(address)
         await self.client.connect()
-        success = await self.client.is_connected()
+        success = self.client.is_connected
         if success:
             await self.client.start_notify(
                 uuid.UUID(self.notify_uuid),
