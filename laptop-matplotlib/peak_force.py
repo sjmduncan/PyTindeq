@@ -4,7 +4,7 @@ import matplotlib.animation as animation
 from matplotlib.widgets import Button,TextBox
 import matplotlib.pyplot as plt
 from collections import deque
-from numpy import savetxt
+from numpy import savetxt,transpose
 import asyncio
 from datetime import datetime
 import threading
@@ -18,6 +18,7 @@ class PeakForce():
     
     self.basedir = path.expanduser('~') + "/Documents/hangboard/"
     self.hproto="destiny" # hangboard or test protocol
+    self.saved=False
     self.unit_scale = PeakForce.units[unit]
     self.unit_name = unit
 
@@ -59,8 +60,8 @@ class PeakForce():
     self.above_thresh = False
 
   def close(self, e):
-    if len(self.plotx) > 0:
-      self.ssave()
+    if len(self.plotx) > 0 and not self.saved:
+      self.ssave(e)
     self.collecting = False
     self.running = False
 
@@ -77,6 +78,7 @@ class PeakForce():
           self.ploty.append([])
           self.t0.append(pt[0])
           self.labels.append(self.tLabel.text)
+          self.saved = False
         self.above_thresh = True
       if pt[1] < self.cStopThresh:
         self.above_thresh = False
@@ -117,8 +119,9 @@ class PeakForce():
     for i in range(len(self.plotx)):
       if len(self.ploty) > 0:
         fname=fbase+'-'+str(self.t0[i])+'-'+self.labels[i]+".csv"
-        savetxt(fname , [self.plotx[i], self.ploty[i]], delimiter=",")
+        savetxt(fname , transpose([self.plotx[i], self.ploty[i]]), delimiter=",")
         print("saved " + fname)
+    self.saved = True
 
   def start(self):
     self.animator=animation.FuncAnimation(self.fig, self.update_plot, interval=500, blit=False)
